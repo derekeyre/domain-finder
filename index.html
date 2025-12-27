@@ -3,465 +3,1020 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AxisGTM - The Infrastructure of Scale</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>AxisGTM - Navigating AI-Powered GTM Strategies</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --navy-primary: #001F3F;
+            --navy-light: #003366;
+            --gold-accent: #D4AF37;
+            --electric-blue: #00BFFF;
+            --white: #FFFFFF;
+            --gray: #A9A9A9;
+        }
+
         * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background: #050505;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--navy-primary) 0%, #001429 100%);
+            color: var(--white);
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
         }
 
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
+        /* Animated Background Compass Rose */
+        .compass-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120vw;
+            height: 120vh;
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
+            animation: slowRotate 120s linear infinite;
         }
 
-        .gradient-border {
-            position: relative;
-            background: linear-gradient(135deg, rgba(0, 31, 63, 0.3), rgba(5, 5, 5, 0.8));
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        @keyframes slowRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        .gradient-border::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 31, 63, 0.3));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
+        /* Particle System */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
             pointer-events: none;
         }
 
-        .hover-lift {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .particle {
+            position: absolute;
+            background: var(--electric-blue);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float-particle 15s infinite;
         }
 
-        .hover-lift:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 31, 63, 0.4);
+        @keyframes float-particle {
+            0%, 100% {
+                opacity: 0;
+                transform: translateY(0) translateX(0);
+            }
+            10% { opacity: 0.3; }
+            50% {
+                opacity: 0.6;
+                transform: translateY(-100vh) translateX(50px);
+            }
+            90% { opacity: 0.3; }
         }
 
-        .nav-glow {
-            background: linear-gradient(180deg, rgba(0, 31, 63, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%);
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 31, 63, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        nav.scrolled {
+            background: rgba(0, 31, 63, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 191, 255, 0.1);
         }
 
-        .float-animation {
-            animation: float 6s ease-in-out infinite;
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .text-gradient {
-            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo .io {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            color: var(--electric-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold-accent);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--gold-accent);
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 4rem;
+            z-index: 2;
+        }
+
+        /* Axial Earth Logo */
+        .logo-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+
+        .earth-globe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            animation: subtleRotate 20s linear infinite;
+        }
+
+        @keyframes subtleRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .earth-circle {
+            stroke: var(--navy-light);
+            stroke-width: 2;
+            fill: rgba(0, 31, 63, 0.3);
+        }
+
+        .latitude-line, .longitude-line {
+            stroke: var(--navy-light);
+            stroke-width: 1;
+            fill: none;
+            opacity: 0.4;
+        }
+
+        .continent {
+            fill: var(--navy-light);
+            opacity: 0.6;
+        }
+
+        .circuit-pattern {
+            stroke: var(--electric-blue);
+            stroke-width: 0.5;
+            fill: none;
+            opacity: 0.3;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .axis-line {
+            stroke: var(--gold-accent);
+            stroke-width: 3;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px var(--gold-accent));
+        }
+
+        .axis-end {
+            fill: var(--gold-accent);
+            filter: drop-shadow(0 0 6px var(--gold-accent));
+        }
+
+        .digital-trail {
+            stroke: var(--electric-blue);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 10 5;
+            animation: trail-flow 2s linear infinite;
+            opacity: 0.6;
+            filter: drop-shadow(0 0 4px var(--electric-blue));
+        }
+
+        @keyframes trail-flow {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: -30; }
+        }
+
+        .cardinal {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            fill: var(--gold-accent);
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--gold-accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .accent-glow {
-            box-shadow: 0 0 30px rgba(0, 31, 63, 0.6);
+        .hero-title .io {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            background: linear-gradient(135deg, var(--electric-blue) 0%, var(--white) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-tagline {
+            font-size: 1.5rem;
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 700px;
+            font-weight: 300;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold-accent) 0%, #C4A247 100%);
+            color: var(--navy-primary);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--electric-blue);
+            box-shadow: 0 8px 25px rgba(0, 191, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 191, 255, 0.1);
+            border-color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 191, 255, 0.4);
+        }
+
+        /* Sections */
+        section {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 2;
+        }
+
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+            margin: 2rem auto;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: rgba(0, 51, 102, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .service-card:hover::before {
+            left: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--electric-blue);
+            box-shadow: 0 15px 40px rgba(0, 191, 255, 0.3);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--gold-accent) 0%, #C4A247 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+
+        .service-description {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* About Section */
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about-text {
+            font-size: 1.2rem;
+            line-height: 1.9;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 51, 102, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            border-color: var(--electric-blue);
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--gold-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+
+        /* Contact Section */
+        .contact-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(0, 51, 102, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px;
+            padding: 3rem;
+        }
+
+        .contact-info {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-item a {
+            color: var(--electric-blue);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item a:hover {
+            color: var(--gold-accent);
+        }
+
+        .founders {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .founder {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 31, 63, 0.5);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .founder-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--gold-accent) 0%, var(--electric-blue) 100%);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--navy-primary);
+        }
+
+        .founder-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: var(--white);
+        }
+
+        .founder-title {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            padding: 3rem 2rem 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 2;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .footer-logo .io {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--electric-blue);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold-accent);
+        }
+
+        .footer-copyright {
+            width: 100%;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 31, 63, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .nav-links.active {
+                transform: translateX(0);
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-tagline {
+                font-size: 1.2rem;
+            }
+
+            .logo-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .earth-globe {
+                width: 180px;
+                height: 180px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <!-- Animated Compass Background -->
+    <svg class="compass-background" viewBox="0 0 400 400" aria-hidden="true">
+        <circle cx="200" cy="200" r="180" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+        <circle cx="200" cy="200" r="150" fill="none" stroke="currentColor" stroke-width="1" opacity="0.2"/>
+        <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" stroke-width="1" opacity="0.2"/>
+        <line x1="200" y1="20" x2="200" y2="380" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+        <line x1="20" y1="200" x2="380" y2="200" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+        <line x1="60" y1="60" x2="340" y2="340" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+        <line x1="340" y1="60" x2="60" y2="340" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+        <polygon points="200,30 195,50 205,50" fill="currentColor" opacity="0.5"/>
+        <text x="200" y="20" text-anchor="middle" font-size="20" fill="currentColor" opacity="0.5">N</text>
+        <text x="380" y="205" text-anchor="middle" font-size="20" fill="currentColor" opacity="0.5">E</text>
+        <text x="200" y="390" text-anchor="middle" font-size="20" fill="currentColor" opacity="0.5">S</text>
+        <text x="20" y="205" text-anchor="middle" font-size="20" fill="currentColor" opacity="0.5">W</text>
+    </svg>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+    <!-- Particle System -->
+    <div class="particles" id="particles" aria-hidden="true"></div>
 
-        // Custom Logo Component - Minimalist Earth with 45-degree Axis
-        const AxisLogo = ({ className = "w-10 h-10" }) => (
-            <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Earth Circle */}
-                <circle cx="50" cy="50" r="35" stroke="url(#logoGradient)" strokeWidth="2" fill="none"/>
+    <!-- Navigation -->
+    <nav id="nav" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo" aria-label="AxisGTM Home">
+                AxisGTM<span class="io">.io</span>
+            </a>
+            <div class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" role="button" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
 
-                {/* Latitude Lines */}
-                <ellipse cx="50" cy="50" rx="35" ry="12" stroke="url(#logoGradient)" strokeWidth="0.8" opacity="0.4" fill="none"/>
-                <ellipse cx="50" cy="50" rx="35" ry="22" stroke="url(#logoGradient)" strokeWidth="0.8" opacity="0.3" fill="none"/>
+    <!-- Hero Section -->
+    <section id="home" class="hero" role="banner">
+        <div class="logo-container">
+            <svg class="earth-globe" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-labelledby="logoTitle logoDesc">
+                <title id="logoTitle">AxisGTM Logo</title>
+                <desc id="logoDesc">A stylized earth globe with an axis line representing navigation and AI-powered strategies</desc>
 
-                {/* Axis Line at 45 degrees */}
-                <line x1="25" y1="25" x2="75" y2="75" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round"/>
-                <circle cx="25" cy="25" r="3" fill="#94a3b8"/>
-                <circle cx="75" cy="75" r="3" fill="#94a3b8"/>
+                <!-- Main Earth Circle -->
+                <circle cx="150" cy="150" r="120" class="earth-circle"/>
 
-                {/* Gradient Definition */}
-                <defs>
-                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9"/>
-                        <stop offset="100%" stopColor="#94a3b8" stopOpacity="0.6"/>
-                    </linearGradient>
-                </defs>
+                <!-- Latitude Lines -->
+                <ellipse cx="150" cy="150" rx="120" ry="40" class="latitude-line"/>
+                <ellipse cx="150" cy="150" rx="120" ry="70" class="latitude-line"/>
+                <ellipse cx="150" cy="150" rx="120" ry="100" class="latitude-line"/>
+
+                <!-- Longitude Lines -->
+                <ellipse cx="150" cy="150" rx="40" ry="120" class="longitude-line"/>
+                <ellipse cx="150" cy="150" rx="70" ry="120" class="longitude-line"/>
+                <ellipse cx="150" cy="150" rx="100" ry="120" class="longitude-line"/>
+
+                <!-- Simplified Continents (Abstract) -->
+                <path d="M 150 60 Q 170 70 180 90 Q 190 110 170 120 Q 150 130 140 110 Q 130 90 150 60 Z" class="continent"/>
+                <path d="M 80 140 Q 100 145 110 160 Q 120 175 100 185 Q 80 195 70 175 Q 60 155 80 140 Z" class="continent"/>
+                <path d="M 200 180 Q 220 185 230 200 Q 240 215 220 225 Q 200 235 190 215 Q 180 195 200 180 Z" class="continent"/>
+
+                <!-- Circuit Patterns on Continents -->
+                <path d="M 150 70 L 160 75 L 165 70 L 170 80 M 155 85 L 160 90 L 165 85" class="circuit-pattern"/>
+                <path d="M 85 150 L 95 155 L 90 160 L 100 165 M 90 170 L 95 175" class="circuit-pattern"/>
+                <path d="M 205 190 L 215 195 L 210 200 L 220 205" class="circuit-pattern"/>
+
+                <!-- Axis Line at 23.5 degrees (tilted) -->
+                <line x1="70" y1="100" x2="230" y2="200" class="axis-line"/>
+
+                <!-- Digital Trail along Axis -->
+                <path d="M 70 100 L 230 200" class="digital-trail"/>
+
+                <!-- Axis End Points (Compass Needle) -->
+                <circle cx="70" cy="100" r="5" class="axis-end"/>
+                <circle cx="230" cy="200" r="5" class="axis-end"/>
+                <polygon points="70,95 65,100 70,105" fill="#D4AF37"/>
+                <polygon points="230,195 235,200 230,205" fill="#D4AF37"/>
+
+                <!-- Cardinal Directions -->
+                <text x="150" y="25" text-anchor="middle" class="cardinal">N</text>
+                <text x="275" y="155" text-anchor="middle" class="cardinal">E</text>
+                <text x="150" y="285" text-anchor="middle" class="cardinal">S</text>
+                <text x="25" y="155" text-anchor="middle" class="cardinal">W</text>
             </svg>
-        );
+        </div>
 
-        // Intersection Observer Hook for Scroll Animations
-        const useIntersectionObserver = (options = {}) => {
-            const elementRef = useRef(null);
-            const [isVisible, setIsVisible] = useState(false);
+        <h1 class="hero-title">AxisGTM<span class="io">.io</span></h1>
+        <p class="hero-tagline">Navigating AI-Powered GTM Strategies</p>
 
-            useEffect(() => {
-                const observer = new IntersectionObserver(([entry]) => {
-                    if (entry.isIntersecting) {
-                        setIsVisible(true);
-                    }
-                }, { threshold: 0.1, ...options });
+        <div class="hero-cta">
+            <a href="#contact" class="btn btn-primary">Start Your Journey</a>
+            <a href="#services" class="btn btn-secondary">Explore Services</a>
+        </div>
+    </section>
 
-                const currentElement = elementRef.current;
-                if (currentElement) {
-                    observer.observe(currentElement);
+    <!-- Services Section -->
+    <section id="services">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Our Services</h2>
+                <div class="divider" aria-hidden="true"></div>
+                <p class="section-subtitle">
+                    Precision-engineered GTM infrastructure powered by AI and data-driven insights
+                </p>
+            </div>
+
+            <div class="services-grid">
+                <article class="service-card">
+                    <div class="service-icon" aria-hidden="true">📊</div>
+                    <h3 class="service-title">CLV Optimization</h3>
+                    <p class="service-description">
+                        Maximize customer lifetime value through advanced analytics, predictive modeling,
+                        and strategic interventions. We architect retention systems that compound growth
+                        and transform one-time buyers into loyal advocates.
+                    </p>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon" aria-hidden="true">⚡</div>
+                    <h3 class="service-title">GTM Automation</h3>
+                    <p class="service-description">
+                        Build automated outbound systems using Clay for data enrichment, multi-channel
+                        sequencing, and intelligent personalization. We create scalable infrastructure
+                        that fills your pipeline with precision-targeted opportunities.
+                    </p>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon" aria-hidden="true">✍️</div>
+                    <h3 class="service-title">LinkedIn Ghostwriting</h3>
+                    <p class="service-description">
+                        Establish executive authority with voice-matched content that builds foundational
+                        credibility. Strategic storytelling that transforms founders into industry thought
+                        leaders and creates long-term brand equity.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Our Vision</h2>
+                <div class="divider" aria-hidden="true"></div>
+            </div>
+
+            <div class="about-content">
+                <p class="about-text">
+                    AxisGTM bridges the timeless elegance of strategic navigation with the cutting-edge
+                    precision of AI-powered systems. Like master navigators charting courses across
+                    uncharted waters, we guide ambitious startups and SMBs through the complexities
+                    of modern growth.
+                </p>
+                <p class="about-text">
+                    We don't just consult—we build. Our white-glove approach combines data-driven
+                    automation, strategic positioning, and foundational authority-building to create
+                    GTM infrastructure that scales predictably and compounds over time.
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">2X</div>
+                        <div class="stat-label">Pipeline Velocity</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Hands-On Build</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">Scalability</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Ready to Build?</h2>
+                <div class="divider" aria-hidden="true"></div>
+                <p class="section-subtitle">
+                    Let's architect your growth infrastructure
+                </p>
+            </div>
+
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span aria-hidden="true">📧</span>
+                        <a href="mailto:derek@axisgtm.io">derek@axisgtm.io</a>
+                    </div>
+                    <div class="contact-item">
+                        <span aria-hidden="true">📱</span>
+                        <a href="tel:+306940770705">+30 694 0770 705</a>
+                    </div>
+                </div>
+
+                <div class="founders">
+                    <div class="founder">
+                        <div class="founder-avatar" aria-hidden="true">DB</div>
+                        <h3 class="founder-name">Derek Branch</h3>
+                        <p class="founder-title">Co-founder</p>
+                    </div>
+                    <div class="founder">
+                        <div class="founder-avatar" aria-hidden="true">CW</div>
+                        <h3 class="founder-name">Connor Widmaier</h3>
+                        <p class="founder-title">Co-founder</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="mailto:derek@axisgtm.io?subject=GTM Infrastructure Inquiry" class="btn btn-primary">
+                        Schedule a Call
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-logo">
+                AxisGTM<span class="io">.io</span>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="footer-copyright">
+                © 2025 AxisGTM. Navigating AI-Powered GTM Strategies.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Particle System
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 3 + 1 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Navigation Scroll Effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
                 }
+            });
+        });
 
-                return () => {
-                    if (currentElement) {
-                        observer.unobserve(currentElement);
-                    }
-                };
-            }, []);
-
-            return [elementRef, isVisible];
-        };
-
-        // Animated Section Component
-        const AnimatedSection = ({ children, delay = 0, className = "" }) => {
-            const [ref, isVisible] = useIntersectionObserver();
-
-            return (
-                <div
-                    ref={ref}
-                    className={`fade-in ${isVisible ? 'visible' : ''} ${className}`}
-                    style={{ transitionDelay: `${delay}ms` }}
-                >
-                    {children}
-                </div>
-            );
-        };
-
-        // Main Landing Page Component
-        const AxisGTMLanding = () => {
-            const [scrolled, setScrolled] = useState(false);
-
-            useEffect(() => {
-                const handleScroll = () => {
-                    setScrolled(window.scrollY > 50);
-                };
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
-
-            useEffect(() => {
-                // Initialize Lucide icons
-                lucide.createIcons();
-            }, []);
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#001f3f] to-[#050505]">
-                    {/* Navigation */}
-                    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'nav-glow shadow-2xl py-4' : 'py-6'}`}>
-                        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <AxisLogo className="w-10 h-10" />
-                                <span className="text-2xl font-bold text-white tracking-tight">AxisGTM</span>
-                            </div>
-                            <a
-                                href="#contact"
-                                className="px-6 py-2.5 bg-white text-[#001f3f] font-semibold rounded-lg hover:bg-slate-100 transition-all duration-300 hover:scale-105"
-                            >
-                                Get Started
-                            </a>
-                        </div>
-                    </nav>
-
-                    {/* Hero Section */}
-                    <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
-                        {/* Background Compass */}
-                        <div className="absolute top-1/4 right-1/4 opacity-5 float-animation">
-                            <i data-lucide="compass" className="w-96 h-96 text-white"></i>
-                        </div>
-
-                        <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-                            <AnimatedSection>
-                                <div className="text-center max-w-4xl mx-auto">
-                                    <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
-                                        <i data-lucide="layers" className="w-4 h-4 text-slate-300"></i>
-                                        <span className="text-slate-300 text-sm font-medium">Infrastructure Build, Not Consulting</span>
-                                    </div>
-
-                                    <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                                        The Infrastructure <br/>
-                                        <span className="text-gradient">of Scale</span>
-                                    </h1>
-
-                                    <p className="text-xl lg:text-2xl text-slate-300 mb-12 leading-relaxed font-light">
-                                        We don't just advise; we build the automated systems <br className="hidden lg:block"/>
-                                        that fuel your growth.
-                                    </p>
-
-                                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                        <a
-                                            href="#contact"
-                                            className="w-full sm:w-auto px-8 py-4 bg-white text-[#001f3f] font-semibold text-lg rounded-lg hover:bg-slate-100 transition-all duration-300 hover:scale-105 accent-glow"
-                                        >
-                                            Build Your Infrastructure
-                                        </a>
-                                        <a
-                                            href="#dual-engine"
-                                            className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/20 text-white font-semibold text-lg rounded-lg hover:bg-white/10 transition-all duration-300"
-                                        >
-                                            Learn How It Works
-                                        </a>
-                                    </div>
-                                </div>
-                            </AnimatedSection>
-                        </div>
-                    </section>
-
-                    {/* Dual Engine Section */}
-                    <section id="dual-engine" className="py-20 lg:py-32 relative">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-                            <AnimatedSection>
-                                <div className="text-center mb-16">
-                                    <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-                                        The Dual-Engine System
-                                    </h2>
-                                    <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-                                        Two synchronized engines powering predictable, scalable growth
-                                    </p>
-                                </div>
-                            </AnimatedSection>
-
-                            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-                                {/* Engine A */}
-                                <AnimatedSection delay={200}>
-                                    <div className="gradient-border rounded-2xl p-8 lg:p-10 hover-lift h-full">
-                                        <div className="flex items-center space-x-4 mb-6">
-                                            <div className="p-3 bg-white/10 rounded-xl">
-                                                <i data-lucide="zap" className="w-8 h-8 text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div className="text-sm text-slate-400 font-medium">Engine A</div>
-                                                <h3 className="text-2xl font-bold text-white">Clay-Driven Outbound</h3>
-                                            </div>
-                                        </div>
-
-                                        <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-                                            Data-led precision outreach that fills your pipeline with qualified opportunities.
-                                        </p>
-
-                                        <ul className="space-y-4">
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Automated data enrichment and segmentation</span>
-                                            </li>
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Personalized multi-channel sequences</span>
-                                            </li>
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Real-time optimization and reporting</span>
-                                            </li>
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Seamless CRM integration</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </AnimatedSection>
-
-                                {/* Engine B */}
-                                <AnimatedSection delay={400}>
-                                    <div className="gradient-border rounded-2xl p-8 lg:p-10 hover-lift h-full">
-                                        <div className="flex items-center space-x-4 mb-6">
-                                            <div className="p-3 bg-white/10 rounded-xl">
-                                                <i data-lucide="globe" className="w-8 h-8 text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div className="text-sm text-slate-400 font-medium">Engine B</div>
-                                                <h3 className="text-2xl font-bold text-white">LinkedIn Ghostwriting</h3>
-                                            </div>
-                                        </div>
-
-                                        <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-                                            Build foundational authority that transforms your founders into industry thought leaders.
-                                        </p>
-
-                                        <ul className="space-y-4">
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Strategic content calendars aligned with GTM goals</span>
-                                            </li>
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Voice-matched ghostwriting for authentic presence</span>
-                                            </li>
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Engagement optimization and community building</span>
-                                            </li>
-                                            <li className="flex items-start space-x-3">
-                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
-                                                <span className="text-slate-300">Long-term brand equity creation</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </AnimatedSection>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Value Proposition Section */}
-                    <section className="py-20 lg:py-32 relative">
-                        <div className="max-w-5xl mx-auto px-6 lg:px-12">
-                            <AnimatedSection>
-                                <div className="gradient-border rounded-2xl p-10 lg:p-16 text-center">
-                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl mb-8">
-                                        <i data-lucide="compass" className="w-8 h-8 text-white"></i>
-                                    </div>
-
-                                    <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-                                        White-Glove Infrastructure for High-Growth Teams
-                                    </h2>
-
-                                    <p className="text-xl text-slate-300 leading-relaxed mb-8">
-                                        We partner with ambitious startups and SMBs to build, deploy, and optimize
-                                        the GTM systems that turn growth from guesswork into a predictable science.
-                                        Laser-focused, technical, and built for scale.
-                                    </p>
-
-                                    <div className="grid md:grid-cols-3 gap-8 mt-12">
-                                        <div className="text-center">
-                                            <div className="text-4xl font-bold text-white mb-2">100%</div>
-                                            <div className="text-slate-400">Hands-On Build</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-4xl font-bold text-white mb-2">2X</div>
-                                            <div className="text-slate-400">Pipeline Velocity</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-4xl font-bold text-white mb-2">∞</div>
-                                            <div className="text-slate-400">Scalability</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </AnimatedSection>
-                        </div>
-                    </section>
-
-                    {/* Contact Section */}
-                    <section id="contact" className="py-20 lg:py-32 relative">
-                        <div className="max-w-4xl mx-auto px-6 lg:px-12">
-                            <AnimatedSection>
-                                <div className="text-center mb-12">
-                                    <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-                                        Ready to Build?
-                                    </h2>
-                                    <p className="text-xl text-slate-400">
-                                        Let's architect your growth infrastructure
-                                    </p>
-                                </div>
-                            </AnimatedSection>
-
-                            <AnimatedSection delay={200}>
-                                <div className="gradient-border rounded-2xl p-10 lg:p-12">
-                                    <div className="grid md:grid-cols-2 gap-8 mb-10">
-                                        {/* Derek Branch */}
-                                        <div className="text-center md:text-left">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-full mb-4">
-                                                <span className="text-2xl font-bold text-white">DB</span>
-                                            </div>
-                                            <h3 className="text-2xl font-bold text-white mb-2">Derek Branch</h3>
-                                            <p className="text-slate-400 mb-4">Co-founder</p>
-                                        </div>
-
-                                        {/* Connor Widmaier */}
-                                        <div className="text-center md:text-left">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-full mb-4">
-                                                <span className="text-2xl font-bold text-white">CW</span>
-                                            </div>
-                                            <h3 className="text-2xl font-bold text-white mb-2">Connor Widmaier</h3>
-                                            <p className="text-slate-400 mb-4">Co-founder</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="border-t border-white/10 pt-8 space-y-4">
-                                        <a
-                                            href="tel:+306940770705"
-                                            className="flex items-center justify-center space-x-3 text-slate-300 hover:text-white transition-colors text-lg"
-                                        >
-                                            <i data-lucide="phone" className="w-5 h-5"></i>
-                                            <span>+30 694 0770 705</span>
-                                        </a>
-
-                                        <a
-                                            href="mailto:derek@axisgtm.io"
-                                            className="flex items-center justify-center space-x-3 text-slate-300 hover:text-white transition-colors text-lg"
-                                        >
-                                            <i data-lucide="mail" className="w-5 h-5"></i>
-                                            <span>derek@axisgtm.io</span>
-                                        </a>
-                                    </div>
-
-                                    <div className="mt-8 text-center">
-                                        <a
-                                            href="mailto:derek@axisgtm.io?subject=GTM Infrastructure Inquiry"
-                                            className="inline-block px-8 py-4 bg-white text-[#001f3f] font-semibold text-lg rounded-lg hover:bg-slate-100 transition-all duration-300 hover:scale-105 accent-glow"
-                                        >
-                                            Schedule a Call
-                                        </a>
-                                    </div>
-                                </div>
-                            </AnimatedSection>
-                        </div>
-                    </section>
-
-                    {/* Footer */}
-                    <footer className="py-12 border-t border-white/5">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-                            <div className="flex flex-col md:flex-row items-center justify-between">
-                                <div className="flex items-center space-x-3 mb-4 md:mb-0">
-                                    <AxisLogo className="w-8 h-8" />
-                                    <span className="text-xl font-bold text-white">AxisGTM</span>
-                                </div>
-
-                                <p className="text-slate-500 text-sm">
-                                    © 2025 AxisGTM. The Infrastructure of Scale.
-                                </p>
-                            </div>
-                        </div>
-                    </footer>
-                </div>
-            );
-        };
-
-        // Render the application
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<AxisGTMLanding />);
+        // Keyboard accessibility for menu toggle
+        menuToggle.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navLinks.classList.toggle('active');
+            }
+        });
     </script>
 </body>
 </html>
