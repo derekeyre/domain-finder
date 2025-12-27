@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AxisGTM - The Infrastructure of Scale</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #050505;
+            overflow-x: hidden;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 31, 63, 0.3), rgba(5, 5, 5, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 31, 63, 0.3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 31, 63, 0.4);
+        }
+
+        .nav-glow {
+            background: linear-gradient(180deg, rgba(0, 31, 63, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .accent-glow {
+            box-shadow: 0 0 30px rgba(0, 31, 63, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Custom Logo Component - Minimalist Earth with 45-degree Axis
+        const AxisLogo = ({ className = "w-10 h-10" }) => (
+            <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Earth Circle */}
+                <circle cx="50" cy="50" r="35" stroke="url(#logoGradient)" strokeWidth="2" fill="none"/>
+
+                {/* Latitude Lines */}
+                <ellipse cx="50" cy="50" rx="35" ry="12" stroke="url(#logoGradient)" strokeWidth="0.8" opacity="0.4" fill="none"/>
+                <ellipse cx="50" cy="50" rx="35" ry="22" stroke="url(#logoGradient)" strokeWidth="0.8" opacity="0.3" fill="none"/>
+
+                {/* Axis Line at 45 degrees */}
+                <line x1="25" y1="25" x2="75" y2="75" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round"/>
+                <circle cx="25" cy="25" r="3" fill="#94a3b8"/>
+                <circle cx="75" cy="75" r="3" fill="#94a3b8"/>
+
+                {/* Gradient Definition */}
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9"/>
+                        <stop offset="100%" stopColor="#94a3b8" stopOpacity="0.6"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        );
+
+        // Intersection Observer Hook for Scroll Animations
+        const useIntersectionObserver = (options = {}) => {
+            const elementRef = useRef(null);
+            const [isVisible, setIsVisible] = useState(false);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true);
+                    }
+                }, { threshold: 0.1, ...options });
+
+                const currentElement = elementRef.current;
+                if (currentElement) {
+                    observer.observe(currentElement);
+                }
+
+                return () => {
+                    if (currentElement) {
+                        observer.unobserve(currentElement);
+                    }
+                };
+            }, []);
+
+            return [elementRef, isVisible];
+        };
+
+        // Animated Section Component
+        const AnimatedSection = ({ children, delay = 0, className = "" }) => {
+            const [ref, isVisible] = useIntersectionObserver();
+
+            return (
+                <div
+                    ref={ref}
+                    className={`fade-in ${isVisible ? 'visible' : ''} ${className}`}
+                    style={{ transitionDelay: `${delay}ms` }}
+                >
+                    {children}
+                </div>
+            );
+        };
+
+        // Main Landing Page Component
+        const AxisGTMLanding = () => {
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            useEffect(() => {
+                // Initialize Lucide icons
+                lucide.createIcons();
+            }, []);
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#001f3f] to-[#050505]">
+                    {/* Navigation */}
+                    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'nav-glow shadow-2xl py-4' : 'py-6'}`}>
+                        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <AxisLogo className="w-10 h-10" />
+                                <span className="text-2xl font-bold text-white tracking-tight">AxisGTM</span>
+                            </div>
+                            <a
+                                href="#contact"
+                                className="px-6 py-2.5 bg-white text-[#001f3f] font-semibold rounded-lg hover:bg-slate-100 transition-all duration-300 hover:scale-105"
+                            >
+                                Get Started
+                            </a>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
+                        {/* Background Compass */}
+                        <div className="absolute top-1/4 right-1/4 opacity-5 float-animation">
+                            <i data-lucide="compass" className="w-96 h-96 text-white"></i>
+                        </div>
+
+                        <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+                            <AnimatedSection>
+                                <div className="text-center max-w-4xl mx-auto">
+                                    <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
+                                        <i data-lucide="layers" className="w-4 h-4 text-slate-300"></i>
+                                        <span className="text-slate-300 text-sm font-medium">Infrastructure Build, Not Consulting</span>
+                                    </div>
+
+                                    <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                                        The Infrastructure <br/>
+                                        <span className="text-gradient">of Scale</span>
+                                    </h1>
+
+                                    <p className="text-xl lg:text-2xl text-slate-300 mb-12 leading-relaxed font-light">
+                                        We don't just advise; we build the automated systems <br className="hidden lg:block"/>
+                                        that fuel your growth.
+                                    </p>
+
+                                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                                        <a
+                                            href="#contact"
+                                            className="w-full sm:w-auto px-8 py-4 bg-white text-[#001f3f] font-semibold text-lg rounded-lg hover:bg-slate-100 transition-all duration-300 hover:scale-105 accent-glow"
+                                        >
+                                            Build Your Infrastructure
+                                        </a>
+                                        <a
+                                            href="#dual-engine"
+                                            className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/20 text-white font-semibold text-lg rounded-lg hover:bg-white/10 transition-all duration-300"
+                                        >
+                                            Learn How It Works
+                                        </a>
+                                    </div>
+                                </div>
+                            </AnimatedSection>
+                        </div>
+                    </section>
+
+                    {/* Dual Engine Section */}
+                    <section id="dual-engine" className="py-20 lg:py-32 relative">
+                        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+                            <AnimatedSection>
+                                <div className="text-center mb-16">
+                                    <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+                                        The Dual-Engine System
+                                    </h2>
+                                    <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+                                        Two synchronized engines powering predictable, scalable growth
+                                    </p>
+                                </div>
+                            </AnimatedSection>
+
+                            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+                                {/* Engine A */}
+                                <AnimatedSection delay={200}>
+                                    <div className="gradient-border rounded-2xl p-8 lg:p-10 hover-lift h-full">
+                                        <div className="flex items-center space-x-4 mb-6">
+                                            <div className="p-3 bg-white/10 rounded-xl">
+                                                <i data-lucide="zap" className="w-8 h-8 text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div className="text-sm text-slate-400 font-medium">Engine A</div>
+                                                <h3 className="text-2xl font-bold text-white">Clay-Driven Outbound</h3>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+                                            Data-led precision outreach that fills your pipeline with qualified opportunities.
+                                        </p>
+
+                                        <ul className="space-y-4">
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Automated data enrichment and segmentation</span>
+                                            </li>
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Personalized multi-channel sequences</span>
+                                            </li>
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Real-time optimization and reporting</span>
+                                            </li>
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Seamless CRM integration</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </AnimatedSection>
+
+                                {/* Engine B */}
+                                <AnimatedSection delay={400}>
+                                    <div className="gradient-border rounded-2xl p-8 lg:p-10 hover-lift h-full">
+                                        <div className="flex items-center space-x-4 mb-6">
+                                            <div className="p-3 bg-white/10 rounded-xl">
+                                                <i data-lucide="globe" className="w-8 h-8 text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div className="text-sm text-slate-400 font-medium">Engine B</div>
+                                                <h3 className="text-2xl font-bold text-white">LinkedIn Ghostwriting</h3>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+                                            Build foundational authority that transforms your founders into industry thought leaders.
+                                        </p>
+
+                                        <ul className="space-y-4">
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Strategic content calendars aligned with GTM goals</span>
+                                            </li>
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Voice-matched ghostwriting for authentic presence</span>
+                                            </li>
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Engagement optimization and community building</span>
+                                            </li>
+                                            <li className="flex items-start space-x-3">
+                                                <div className="mt-1 w-1.5 h-1.5 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                <span className="text-slate-300">Long-term brand equity creation</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </AnimatedSection>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Value Proposition Section */}
+                    <section className="py-20 lg:py-32 relative">
+                        <div className="max-w-5xl mx-auto px-6 lg:px-12">
+                            <AnimatedSection>
+                                <div className="gradient-border rounded-2xl p-10 lg:p-16 text-center">
+                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl mb-8">
+                                        <i data-lucide="compass" className="w-8 h-8 text-white"></i>
+                                    </div>
+
+                                    <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+                                        White-Glove Infrastructure for High-Growth Teams
+                                    </h2>
+
+                                    <p className="text-xl text-slate-300 leading-relaxed mb-8">
+                                        We partner with ambitious startups and SMBs to build, deploy, and optimize
+                                        the GTM systems that turn growth from guesswork into a predictable science.
+                                        Laser-focused, technical, and built for scale.
+                                    </p>
+
+                                    <div className="grid md:grid-cols-3 gap-8 mt-12">
+                                        <div className="text-center">
+                                            <div className="text-4xl font-bold text-white mb-2">100%</div>
+                                            <div className="text-slate-400">Hands-On Build</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-4xl font-bold text-white mb-2">2X</div>
+                                            <div className="text-slate-400">Pipeline Velocity</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-4xl font-bold text-white mb-2">∞</div>
+                                            <div className="text-slate-400">Scalability</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </AnimatedSection>
+                        </div>
+                    </section>
+
+                    {/* Contact Section */}
+                    <section id="contact" className="py-20 lg:py-32 relative">
+                        <div className="max-w-4xl mx-auto px-6 lg:px-12">
+                            <AnimatedSection>
+                                <div className="text-center mb-12">
+                                    <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+                                        Ready to Build?
+                                    </h2>
+                                    <p className="text-xl text-slate-400">
+                                        Let's architect your growth infrastructure
+                                    </p>
+                                </div>
+                            </AnimatedSection>
+
+                            <AnimatedSection delay={200}>
+                                <div className="gradient-border rounded-2xl p-10 lg:p-12">
+                                    <div className="grid md:grid-cols-2 gap-8 mb-10">
+                                        {/* Derek Branch */}
+                                        <div className="text-center md:text-left">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-full mb-4">
+                                                <span className="text-2xl font-bold text-white">DB</span>
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-white mb-2">Derek Branch</h3>
+                                            <p className="text-slate-400 mb-4">Co-founder</p>
+                                        </div>
+
+                                        {/* Connor Widmaier */}
+                                        <div className="text-center md:text-left">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-full mb-4">
+                                                <span className="text-2xl font-bold text-white">CW</span>
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-white mb-2">Connor Widmaier</h3>
+                                            <p className="text-slate-400 mb-4">Co-founder</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="border-t border-white/10 pt-8 space-y-4">
+                                        <a
+                                            href="tel:+306940770705"
+                                            className="flex items-center justify-center space-x-3 text-slate-300 hover:text-white transition-colors text-lg"
+                                        >
+                                            <i data-lucide="phone" className="w-5 h-5"></i>
+                                            <span>+30 694 0770 705</span>
+                                        </a>
+
+                                        <a
+                                            href="mailto:derek@axisgtm.io"
+                                            className="flex items-center justify-center space-x-3 text-slate-300 hover:text-white transition-colors text-lg"
+                                        >
+                                            <i data-lucide="mail" className="w-5 h-5"></i>
+                                            <span>derek@axisgtm.io</span>
+                                        </a>
+                                    </div>
+
+                                    <div className="mt-8 text-center">
+                                        <a
+                                            href="mailto:derek@axisgtm.io?subject=GTM Infrastructure Inquiry"
+                                            className="inline-block px-8 py-4 bg-white text-[#001f3f] font-semibold text-lg rounded-lg hover:bg-slate-100 transition-all duration-300 hover:scale-105 accent-glow"
+                                        >
+                                            Schedule a Call
+                                        </a>
+                                    </div>
+                                </div>
+                            </AnimatedSection>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="py-12 border-t border-white/5">
+                        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+                            <div className="flex flex-col md:flex-row items-center justify-between">
+                                <div className="flex items-center space-x-3 mb-4 md:mb-0">
+                                    <AxisLogo className="w-8 h-8" />
+                                    <span className="text-xl font-bold text-white">AxisGTM</span>
+                                </div>
+
+                                <p className="text-slate-500 text-sm">
+                                    © 2025 AxisGTM. The Infrastructure of Scale.
+                                </p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        // Render the application
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AxisGTMLanding />);
+    </script>
+</body>
+</html>
